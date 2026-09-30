@@ -1,0 +1,690 @@
+/* ============================================================
+   EDUGENIE
+   MAIN STYLES
+   ============================================================ */
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f4f7fb;
+
+    color: #172033;
+
+}
+
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+
+.container {
+
+    width:
+        min(
+            900px,
+            92%
+        );
+
+    margin:
+        auto;
+
+    padding:
+        45px 0 70px;
+
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero {
+
+    text-align: center;
+
+    margin-bottom: 28px;
+
+}
+
+
+.badge {
+
+    display: inline-block;
+
+    padding:
+        7px 12px;
+
+    border-radius:
+        999px;
+
+    background:
+        #e8efff;
+
+    font-size:
+        12px;
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        1px;
+
+}
+
+
+h1 {
+
+    margin:
+        12px 0 8px;
+
+    font-size:
+        clamp(
+            42px,
+            8vw,
+            70px
+        );
+
+}
+
+
+.subtitle {
+
+    max-width:
+        650px;
+
+    margin:
+        auto;
+
+    line-height:
+        1.6;
+
+    color:
+        #58657a;
+
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+.card {
+
+    background:
+        white;
+
+    border-radius:
+        20px;
+
+    padding:
+        26px;
+
+    margin-top:
+        18px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(
+            20,
+            40,
+            80,
+            0.08
+        );
+
+}
+
+
+/* ============================================================
+   LABEL
+   ============================================================ */
+
+label {
+
+    display:
+        block;
+
+    margin:
+        10px 0 8px;
+
+    font-weight:
+        bold;
+
+}
+
+
+/* ============================================================
+   SELECT
+   ============================================================ */
+
+select {
+
+    width:
+        100%;
+
+    border:
+        1px solid #d8deea;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px;
+
+    font:
+        inherit;
+
+    background:
+        white;
+
+    color:
+        #172033;
+
+    margin-bottom:
+        12px;
+
+}
+
+
+select:focus {
+
+    outline:
+        2px solid #c8d5ed;
+
+}
+
+
+/* ============================================================
+   TEXTAREA
+   ============================================================ */
+
+textarea {
+
+    width:
+        100%;
+
+    border:
+        1px solid #d8deea;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px;
+
+    font:
+        inherit;
+
+    background:
+        white;
+
+    resize:
+        vertical;
+
+    min-height:
+        170px;
+
+}
+
+
+textarea:focus {
+
+    outline:
+        2px solid #c8d5ed;
+
+}
+
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+button {
+
+    border:
+        0;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px 18px;
+
+    font-weight:
+        bold;
+
+    cursor:
+        pointer;
+
+}
+
+
+#submitBtn {
+
+    width:
+        100%;
+
+    margin-top:
+        16px;
+
+    background:
+        #172033;
+
+    color:
+        white;
+
+}
+
+
+#submitBtn:hover {
+
+    opacity:
+        0.92;
+
+}
+
+
+#submitBtn:disabled {
+
+    opacity:
+        0.6;
+
+    cursor:
+        wait;
+
+}
+
+
+/* ============================================================
+   SECONDARY BUTTON
+   ============================================================ */
+
+.secondary {
+
+    background:
+        #edf1f7;
+
+    color:
+        #172033;
+
+}
+
+
+.secondary:hover {
+
+    background:
+        #e1e6ef;
+
+}
+
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.status {
+
+    min-height:
+        20px;
+
+    color:
+        #68758a;
+
+    margin-bottom:
+        0;
+
+}
+
+
+/* ============================================================
+   HIDDEN
+   ============================================================ */
+
+.hidden {
+
+    display:
+        none !important;
+
+}
+
+
+/* ============================================================
+   RESULT
+   ============================================================ */
+
+.result-card {
+
+    height:
+        auto !important;
+
+    max-height:
+        none !important;
+
+    overflow:
+        visible !important;
+
+}
+
+
+.result-header {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+}
+
+
+.result-header h2 {
+
+    margin-top:
+        0;
+
+}
+
+
+/* ============================================================
+   AI TEXT RESULT
+   ============================================================ */
+
+.text-result {
+
+    line-height:
+        1.75;
+
+    height:
+        auto !important;
+
+    max-height:
+        none !important;
+
+    overflow:
+        visible !important;
+
+    white-space:
+        normal;
+
+    word-wrap:
+        break-word;
+
+    overflow-wrap:
+        anywhere;
+
+}
+
+
+.text-result h1,
+.text-result h2,
+.text-result h3,
+.text-result h4 {
+
+    margin-top:
+        24px;
+
+    margin-bottom:
+        10px;
+
+}
+
+
+.text-result p {
+
+    margin:
+        10px 0;
+
+}
+
+
+.text-result ul,
+.text-result ol {
+
+    padding-left:
+        25px;
+
+}
+
+
+.text-result li {
+
+    margin-bottom:
+        7px;
+
+}
+
+
+.text-result code {
+
+    background:
+        #f1f3f7;
+
+    padding:
+        2px 5px;
+
+    border-radius:
+        5px;
+
+}
+
+
+.text-result pre {
+
+    overflow-x:
+        auto;
+
+    padding:
+        15px;
+
+    border-radius:
+        10px;
+
+    background:
+        #f1f3f7;
+
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.error {
+
+    background:
+        #fff0f0;
+
+    border:
+        1px solid #ffcaca;
+
+    color:
+        #9a2525;
+
+    padding:
+        14px;
+
+    border-radius:
+        10px;
+
+}
+
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+
+.quiz-question {
+
+    border:
+        1px solid #e1e6ef;
+
+    padding:
+        18px;
+
+    border-radius:
+        14px;
+
+    margin-bottom:
+        18px;
+
+}
+
+
+.quiz-question h3 {
+
+    margin-top:
+        0;
+
+    line-height:
+        1.5;
+
+}
+
+
+.options {
+
+    display:
+        grid;
+
+    gap:
+        10px;
+
+}
+
+
+.option {
+
+    width:
+        100%;
+
+    text-align:
+        left;
+
+    background:
+        #f3f6fa;
+
+    color:
+        #172033;
+
+    border:
+        1px solid #d8deea;
+
+    transition:
+        0.2s ease;
+
+}
+
+
+.option:hover {
+
+    background:
+        #e8edf5;
+
+}
+
+
+.option.selected {
+
+    outline:
+        2px solid #172033;
+
+}
+
+
+.feedback {
+
+    min-height:
+        24px;
+
+    margin-bottom:
+        0;
+
+    font-weight:
+        bold;
+
+}
+
+
+.correct {
+
+    color:
+        #18794e;
+
+}
+
+
+.incorrect {
+
+    color:
+        #b42318;
+
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .container {
+
+        padding-top:
+            25px;
+
+    }
+
+
+    .card {
+
+        padding:
+            18px;
+
+        border-radius:
+            15px;
+
+    }
+
+
+    .result-header {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .result-header h2 {
+
+        font-size:
+            22px;
+
+    }
+
+}

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>EduGenie - AI Learning Assistant</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+
+
+<body>
+
+<main class="container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <p class="badge">
+            AI-POWERED LEARNING
+        </p>
+
+        <h1>
+            EduGenie
+        </h1>
+
+        <p class="subtitle">
+            Your AI-powered learning assistant
+            for questions, explanations,
+            quizzes, summaries and learning paths.
+        </p>
+
+    </section>
+
+
+    <!-- INPUT CARD -->
+
+    <section class="card">
+
+        <label for="task">
+            Choose a Task
+        </label>
+
+        <select id="task">
+
+            <option value="qa">
+                Ask a Question
+            </option>
+
+            <option value="explain">
+                Explain a Topic
+            </option>
+
+            <option value="quiz">
+                Generate Quiz
+            </option>
+
+            <option value="summarize">
+                Summarize Text
+            </option>
+
+            <option value="learn">
+                Recommend Learning Path
+            </option>
+
+        </select>
+
+
+        <label for="level">
+            Learning Level
+        </label>
+
+        <select id="level">
+
+            <option value="beginner">
+                Beginner
+            </option>
+
+            <option value="intermediate">
+                Intermediate
+            </option>
+
+            <option value="advanced">
+                Advanced
+            </option>
+
+        </select>
+
+
+        <label for="inputText">
+            Your Input
+        </label>
+
+        <textarea
+            id="inputText"
+            rows="9"
+            placeholder="Example: Explain Java operators in simple words."
+        ></textarea>
+
+
+        <button
+            id="submitBtn"
+            type="button"
+        >
+            Generate Answer
+        </button>
+
+
+        <p
+            id="status"
+            class="status"
+        ></p>
+
+    </section>
+
+
+    <!-- RESULT -->
+
+    <section
+        id="resultCard"
+        class="card result-card hidden"
+    >
+
+        <div class="result-header">
+
+            <h2>
+                EduGenie Result
+            </h2>
+
+            <button
+                id="copyBtn"
+                class="secondary"
+                type="button"
+            >
+                Copy
+            </button>
+
+        </div>
+
+        <div id="result"></div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =================================================
+           ELEMENTS
+        ================================================= */
+
+        const task =
+            document.getElementById("task");
+
+        const level =
+            document.getElementById("level");
+
+        const inputText =
+            document.getElementById("inputText");
+
+        const submitBtn =
+            document.getElementById("submitBtn");
+
+        const statusBox =
+            document.getElementById("status");
+
+        const resultCard =
+            document.getElementById("resultCard");
+
+        const result =
+            document.getElementById("result");
+
+        const copyBtn =
+            document.getElementById("copyBtn");
+
+
+        /* =================================================
+           CHECK THAT ELEMENTS EXIST
+        ================================================= */
+
+        console.log("EduGenie JavaScript loaded.");
+
+        console.log(
+            "Generate button:",
+            submitBtn
+        );
+
+
+        /* =================================================
+           PLACEHOLDERS
+        ================================================= */
+
+        const placeholders = {
+
+            qa:
+                "Example: What is Java?",
+
+            explain:
+                "Example: Explain Java operators in simple words.",
+
+            quiz:
+                "Example: Java operators",
+
+            summarize:
+                "Paste your notes here.",
+
+            learn:
+                "Example: Java Programming"
+
+        };
+
+
+        /* =================================================
+           ENDPOINTS
+        ================================================= */
+
+        const endpoints = {
+
+            qa:
+                "/qa",
+
+            explain:
+                "/explain",
+
+            quiz:
+                "/quiz",
+
+            summarize:
+                "/summarize",
+
+            learn:
+                "/learn/recommendations"
+
+        };
+
+
+        /* =================================================
+           TASK CHANGE
+        ================================================= */
+
+        task.addEventListener(
+            "change",
+            function () {
+
+                inputText.placeholder =
+                    placeholders[task.value];
+
+                resultCard.classList.add(
+                    "hidden"
+                );
+
+                result.innerHTML = "";
+
+                statusBox.textContent = "";
+
+            }
+        );
+
+
+        /* =================================================
+           ESCAPE HTML
+        ================================================= */
+
+        function escapeHtml(value) {
+
+            return String(value || "")
+
+                .replaceAll(
+                    "&",
+                    "&amp;"
+                )
+
+                .replaceAll(
+                    "<",
+                    "&lt;"
+                )
+
+                .replaceAll(
+                    ">",
+                    "&gt;"
+                )
+
+                .replaceAll(
+                    '"',
+                    "&quot;"
+                )
+
+                .replaceAll(
+                    "'",
+                    "&#039;"
+                );
+
+        }
+
+
+        /* =================================================
+           RENDER TEXT
+        ================================================= */
+
+        function renderText(text) {
+
+            const value =
+                String(text || "");
+
+            if (
+                typeof marked !== "undefined" &&
+                typeof marked.parse === "function"
+            ) {
+
+                return `
+                    <div class="text-result">
+                        ${marked.parse(
+                            value,
+                            {
+                                breaks: true
+                            }
+                        )}
+                    </div>
+                `;
+
+            }
+
+            return `
+                <div class="text-result">
+                    ${escapeHtml(value)
+                        .replace(
+                            /\n/g,
+                            "<br>"
+                        )}
+                </div>
+            `;
+
+        }
+
+
+        /* =================================================
+           QUIZ
+        ================================================= */
+
+        let currentQuiz = [];
+
+
+        function renderQuiz(quiz) {
+
+            currentQuiz = quiz;
+
+
+            return quiz.map(
+                function (item, questionIndex) {
+
+                    return `
+
+                        <div
+                            class="quiz-question"
+                            data-question="${questionIndex}"
+                        >
+
+                            <h3>
+                                ${questionIndex + 1}.
+                                ${escapeHtml(
+                                    item.question
+                                )}
+                            </h3>
+
+
+                            <div class="options">
+
+                                ${item.options.map(
+
+                                    function (
+                                        option,
+                                        optionIndex
+                                    ) {
+
+                                        return `
+
+                                            <button
+                                                type="button"
+                                                class="option"
+                                                data-question="${questionIndex}"
+                                                data-option="${optionIndex}"
+                                            >
+
+                                                ${String.fromCharCode(
+                                                    65 + optionIndex
+                                                )}.
+                                                ${escapeHtml(
+                                                    option
+                                                )}
+
+                                            </button>
+
+                                        `;
+
+                                    }
+
+                                ).join("")}
+
+                            </div>
+
+
+                            <p class="feedback"></p>
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("");
+
+        }
+
+
+        /* =================================================
+           QUIZ ANSWER CHECKING
+        ================================================= */
+
+        function setupQuizButtons() {
+
+            document
+                .querySelectorAll(".option")
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const questionIndex =
+                                    Number(
+                                        button.dataset.question
+                                    );
+
+                                const optionIndex =
+                                    Number(
+                                        button.dataset.option
+                                    );
+
+
+                                const question =
+                                    currentQuiz[
+                                        questionIndex
+                                    ];
+
+
+                                if (!question) {
+                                    return;
+                                }
+
+
+                                const selectedAnswer =
+                                    String(
+                                        question.options[
+                                            optionIndex
+                                        ]
+                                    ).trim();
+
+
+                                const correctAnswer =
+                                    String(
+                                        question.answer
+                                    ).trim();
+
+
+                                const box =
+                                    button.closest(
+                                        ".quiz-question"
+                                    );
+
+
+                                const feedback =
+                                    box.querySelector(
+                                        ".feedback"
+                                    );
+
+
+                                box
+                                    .querySelectorAll(
+                                        ".option"
+                                    )
+                                    .forEach(
+                                        function (btn) {
+
+                                            btn.classList.remove(
+                                                "selected"
+                                            );
+
+                                        }
+                                    );
+
+
+                                button.classList.add(
+                                    "selected"
+                                );
+
+
+                                if (
+                                    selectedAnswer ===
+                                    correctAnswer
+                                ) {
+
+                                    feedback.textContent =
+                                        "✓ Correct!";
+
+                                    feedback.className =
+                                        "feedback correct";
+
+                                }
+
+                                else {
+
+                                    feedback.textContent =
+                                        "✗ Incorrect. Correct answer: "
+                                        +
+                                        correctAnswer;
+
+                                    feedback.className =
+                                        "feedback incorrect";
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =================================================
+           GENERATE BUTTON
+        ================================================= */
+
+        submitBtn.addEventListener(
+            "click",
+            async function () {
+
+
+                console.log(
+                    "GENERATE BUTTON CLICKED"
+                );
+
+
+                const selectedTask =
+                    task.value;
+
+
+                const text =
+                    inputText.value.trim();
+
+
+                /* =========================================
+                   VALIDATION
+                ========================================= */
+
+                if (!text) {
+
+                    statusBox.textContent =
+                        "Please enter some text first.";
+
+                    inputText.focus();
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   LOADING
+                ========================================= */
+
+                submitBtn.disabled = true;
+
+                submitBtn.textContent =
+                    "Generating...";
+
+                statusBox.textContent =
+                    "EduGenie is thinking...";
+
+                resultCard.classList.add(
+                    "hidden"
+                );
+
+
+                /* =========================================
+                   PAYLOAD
+
+                   IMPORTANT:
+                   Send only the fields expected by
+                   your current FastAPI backend.
+                ========================================= */
+
+                let payload;
+
+
+                if (
+                    selectedTask === "qa"
+                ) {
+
+                    payload = {
+                        question: text
+                    };
+
+                }
+
+                else if (
+                    selectedTask === "explain"
+                ) {
+
+                    payload = {
+                        topic: text
+                    };
+
+                }
+
+                else if (
+                    selectedTask === "learn"
+                ) {
+
+                    payload = {
+
+                        topic: text,
+
+                        level: level.value
+
+                    };
+
+                }
+
+                else {
+
+                    payload = {
+                        text: text
+                    };
+
+                }
+
+
+                console.log(
+                    "TASK:",
+                    selectedTask
+                );
+
+                console.log(
+                    "PAYLOAD:",
+                    payload
+                );
+
+
+                /* =========================================
+                   API REQUEST
+                ========================================= */
+
+                try {
+
+
+                    const response =
+                        await fetch(
+                            endpoints[selectedTask],
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        payload
+                                    )
+
+                            }
+                        );
+
+
+                    console.log(
+                        "HTTP STATUS:",
+                        response.status
+                    );
+
+
+                    /* =====================================
+                       READ RESPONSE
+                    ===================================== */
+
+                    const data =
+                        await response.json();
+
+
+                    console.log(
+                        "API RESPONSE:",
+                        data
+                    );
+
+
+                    resultCard.classList.remove(
+                        "hidden"
+                    );
+
+
+                    /* =====================================
+                       API ERROR
+                    ===================================== */
+
+                    if (!data.success) {
+
+                        result.innerHTML = `
+
+                            <div class="error">
+
+                                ${escapeHtml(
+                                    data.error ||
+                                    "Something went wrong."
+                                )}
+
+                            </div>
+
+                        `;
+
+                        statusBox.textContent =
+                            "Request failed.";
+
+                        return;
+
+                    }
+
+
+                    /* =====================================
+                       QUESTION
+                    ===================================== */
+
+                    if (
+                        selectedTask === "qa"
+                    ) {
+
+                        result.innerHTML =
+                            renderText(
+                                data.answer
+                            );
+
+                    }
+
+
+                    /* =====================================
+                       EXPLANATION
+                    ===================================== */
+
+                    else if (
+                        selectedTask === "explain"
+                    ) {
+
+                        result.innerHTML =
+                            renderText(
+                                data.answer
+                            );
+
+                    }
+
+
+                    /* =====================================
+                       SUMMARY
+                    ===================================== */
+
+                    else if (
+                        selectedTask === "summarize"
+                    ) {
+
+                        result.innerHTML =
+                            renderText(
+                                data.summary
+                            );
+
+                    }
+
+
+                    /* =====================================
+                       LEARNING PATH
+                    ===================================== */
+
+                    else if (
+                        selectedTask === "learn"
+                    ) {
+
+                        result.innerHTML =
+                            renderText(
+                                data.learning_path
+                            );
+
+                    }
+
+
+                    /* =====================================
+                       QUIZ
+                    ===================================== */
+
+                    else if (
+                        selectedTask === "quiz"
+                    ) {
+
+
+                        if (
+                            !Array.isArray(
+                                data.quiz
+                            )
+                        ) {
+
+                            throw new Error(
+                                "Quiz data is invalid."
+                            );
+
+                        }
+
+
+                        result.innerHTML =
+                            renderQuiz(
+                                data.quiz
+                            );
+
+
+                        setupQuizButtons();
+
+                    }
+
+
+                    statusBox.textContent =
+                        "Completed.";
+
+                }
+
+
+                catch (error) {
+
+
+                    console.error(
+                        "EDUGENIE ERROR:",
+                        error
+                    );
+
+
+                    resultCard.classList.remove(
+                        "hidden"
+                    );
+
+
+                    result.innerHTML = `
+
+                        <div class="error">
+
+                            <strong>
+                                Error
+                            </strong>
+
+                            <br><br>
+
+                            ${escapeHtml(
+                                error.message
+                            )}
+
+                            <br><br>
+
+                            Please check that
+                            FastAPI is running.
+
+                        </div>
+
+                    `;
+
+
+                    statusBox.textContent =
+                        "Request failed.";
+
+                }
+
+
+                finally {
+
+                    submitBtn.disabled =
+                        false;
+
+                    submitBtn.textContent =
+                        "Generate Answer";
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           COPY
+        ================================================= */
+
+        copyBtn.addEventListener(
+            "click",
+            async function () {
+
+                const text =
+                    result.innerText.trim();
+
+
+                if (!text) {
+                    return;
+                }
+
+
+                try {
+
+                    await navigator.clipboard.writeText(
+                        text
+                    );
+
+
+                    copyBtn.textContent =
+                        "Copied!";
+
+
+                    setTimeout(
+                        function () {
+
+                            copyBtn.textContent =
+                                "Copy";
+
+                        },
+                        1200
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+                    copyBtn.textContent =
+                        "Copy failed";
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           INITIAL PLACEHOLDER
+        ================================================= */
+
+        inputText.placeholder =
+            placeholders[
+                task.value
+            ];
+
+    }
+
+);
+
+</script>
+
+
+</body>
+
+</html>
